@@ -11,9 +11,9 @@ struct ContentView: View {
     @State private var cards = [Card] (repeating: Card.example, count: 10)
     
     var body: some View {
-//        Text("FlashZilla")
-//            .padding()
-//        CardView(card: Card.example)
+        //        Text("FlashZilla")
+        //            .padding()
+        //        CardView(card: Card.example)
         ZStack {
             Image("background")
                 .resizable()
@@ -21,15 +21,25 @@ struct ContentView: View {
             VStack {
                 ZStack {
                     ForEach(0..<cards.count, id: \.self) { index in
-                        CardView(card: cards[index])
-                            .stacked(at: index, total: cards.count)
+                        CardView(card: cards[index]) {
+                            //.stacked(at: index, total: cards.count)
+                            withAnimation {
+                                removeCard(at: index)
+                            }
+                        }
+                        .stacked(at: index, total: cards.count)
                     }
                 }
             }
         }
     }
+    
+    func removeCard(at index: Int) {
+        cards.remove(at: index)
+    }
 }
 
+//card stacking
 extension View {
     func stacked(at position: Int, total: Int) -> some View {
         let offset = Double(total - position)
@@ -41,6 +51,6 @@ extension View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-.previewInterfaceOrientation(.landscapeLeft)
+            .previewInterfaceOrientation(.landscapeLeft)
     }
 }
