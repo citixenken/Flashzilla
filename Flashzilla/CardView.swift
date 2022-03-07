@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CardView: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColor
+    @Environment(\.accessibilityVoiceOverEnabled) var voiceOverEnabled
     
     let card: Card
     var removal: (() -> Void)? = nil
@@ -32,15 +33,30 @@ struct CardView: View {
                 )
             
             VStack {
-                Text(card.prompt)
-                    .font(.largeTitle)
-                    .foregroundColor(.primary)
-                
-                if isShowingAnswer {
-                    Text(card.answer)
-                        .font(.title)
-                        .foregroundColor(.secondary)
+                if voiceOverEnabled {
+                    Text(isShowingAnswer ? card.answer : card.prompt)
+                        .font(.largeTitle)
+                        .foregroundColor(.primary)
+                } else {
+                    Text(card.prompt)
+                        .font(.largeTitle)
+                        .foregroundColor(.primary)
+                    
+                    if isShowingAnswer {
+                        Text(card.answer)
+                            .font(.title)
+                            .foregroundColor(.secondary)
+                    }
                 }
+//                Text(card.prompt)
+//                    .font(.largeTitle)
+//                    .foregroundColor(.primary)
+//
+//                if isShowingAnswer {
+//                    Text(card.answer)
+//                        .font(.title)
+//                        .foregroundColor(.secondary)
+//                }
             }
             .padding(20)
             .multilineTextAlignment(.center)
@@ -50,6 +66,7 @@ struct CardView: View {
         .rotationEffect(.degrees(Double(offset.width / 5)))
         .offset(x: offset.width * 5, y: 0)
         .opacity(2 - Double(abs(offset.width / 50)))
+        .accessibilityAddTraits(.isButton)
         .gesture(
             DragGesture()
                 .onChanged { gesture in
@@ -73,6 +90,7 @@ struct CardView: View {
         .onTapGesture {
             isShowingAnswer.toggle()
         }
+        .animation(.spring(response: 0.5, dampingFraction: 0.3, blendDuration: 0.5), value: offset)
     }
 }
 
